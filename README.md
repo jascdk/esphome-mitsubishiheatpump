@@ -114,11 +114,10 @@ various items prefixed with `!secret`.
 
 ```yaml
 esphome:
-  name: denheatpump
+  name: mitsubishi
   platform: ESP8266
-  board: esp01_1m
-  # Boards tested: ESP-01S (ESP8266), Wemos D1 Mini (ESP8266); ESP32 Wifi-DevKit2
-
+  board: d1_mini
+  
   libraries:
     - SwiCago/HeatPump
 
@@ -126,13 +125,13 @@ esphome:
     - src/esphome-mitsubishiheatpump
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: "your_secret_ssid"
+  password: "your_secret_password"
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Denheatpump Fallback Hotspot"
-    password: !secret fallback_password
+    ssid: "Mitsubishi Fallback Hotspot"
+    password: "password"
 
 captive_portal:
 
@@ -156,43 +155,52 @@ time:
   - platform: homeassistant
     id: homeassistant_time
 
+status_led:
+  pin:
+    number: D4
+    inverted: True
+    
+binary_sensor:
+  - platform: status
+    name: "Mitsubishi Status"    
+    
+switch:
+  - platform: restart
+    name: "Mitsubishi Heatpump Restart"    
+
 # Text sensors with general information.
 text_sensor:
   # Expose ESPHome version as sensor.
   - platform: version
-    name: denheatpump ESPHome Version
+    name: mitsubishi ESPHome Version
   # Expose WiFi information as sensors.
   - platform: wifi_info
     ip_address:
-      name: denheatpump IP
+      name: mitsubishi IP
     ssid:
-      name: denheatpump SSID
+      name: mitsubishi SSID
     bssid:
-      name: denheatpump BSSID
+      name: mitsubishi BSSID
 
 # Sensors with general information.
 sensor:
   # Uptime sensor.
   - platform: uptime
-    name: denheatpump Uptime
+    name: mitsubishi Uptime
 
   # WiFi Signal sensor.
   - platform: wifi_signal
-    name: denheatpump WiFi Signal
+    name: mitsubishi WiFi Signal
     update_interval: 60s
-
 
 climate:
   - platform: custom
-    # ESP32 only - change &Serial to &Serial1 or &Serial2 and remove the
-    # logging:baud_rate above to allow the built-in UART0 to function for
-    # logging.
     lambda: |-
-      auto my_heatpump = new MitsubishiHeatPump(&Serial);
+      auto my_heatpump = new MitsubishiHeatPump(&Serial, 1000);
       App.register_component(my_heatpump);
       return {my_heatpump};
     climates:
-      - name: "Den Heat Pump"
+      - name: "Mitsubishi"
 ```
 
 # See Also
